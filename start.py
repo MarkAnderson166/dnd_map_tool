@@ -4,7 +4,10 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageDraw
 import math
 
-# Initialize global variables
+from image_layer import *
+from grid_layer  import *
+from draw_layer  import *
+
 current_rotation = 0
 current_image = None
 fullscreen = False
@@ -43,6 +46,24 @@ def rotate_image():
     global current_rotation
     current_rotation = (current_rotation + 90) % 360
     display_image()
+
+# Toggle fullscreen mode
+def toggle_fullscreen(event=None):
+    global fullscreen
+    fullscreen = not fullscreen
+    image_window.attributes("-fullscreen", fullscreen)
+
+# Create a window for displaying images
+def create_image_window():
+    global image_label, image_window
+    image_window = tk.Toplevel()
+    image_window.title("Image Display")
+    image_window.geometry("1080x1920")  # Portrait aspect ratio
+    image_label = tk.Label(image_window)
+    image_label.pack(expand=True)
+    image_label.bind("<Double-Button-1>", toggle_fullscreen)
+
+
 
 # Draw grid overlay based on selected grid type
 def draw_grid(image):
@@ -85,21 +106,6 @@ def draw_grid(image):
     image_label.config(image=photo)
     image_label.image = photo
 
-# Toggle fullscreen mode
-def toggle_fullscreen(event=None):
-    global fullscreen
-    fullscreen = not fullscreen
-    image_window.attributes("-fullscreen", fullscreen)
-
-# Create a window for displaying images
-def create_image_window():
-    global image_label, image_window
-    image_window = tk.Toplevel()
-    image_window.title("Image Display")
-    image_window.geometry("600x800")  # Portrait aspect ratio
-    image_label = tk.Label(image_window)
-    image_label.pack(expand=True)
-    image_label.bind("<Double-Button-1>", toggle_fullscreen)
 
 # Set up the controller window
 controller_window = tk.Tk()
@@ -107,8 +113,7 @@ controller_window.title("Image Controller")
 controller_window.attributes("-topmost", True)
 controller_window.geometry("400x400")
 
-# Load media from nested directories
-media_directory = r"C:\projects\DnD_Sidebar"  # Change this to your media directory
+media_directory = os.path.dirname(os.path.abspath(__file__))
 media_dict = load_images(media_directory)
 
 # Create dropdowns for each folder
